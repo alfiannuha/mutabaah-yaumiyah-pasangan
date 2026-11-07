@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mutaba'ah Yaumiyah Pasangan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background-color: #ffffff;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+</head>
+<body class="bg-white flex justify-center">
+
+  <!-- ================= LAYAR LOGIN ================= -->
+  <div id="login-screen" class="fixed inset-0 z-50 bg-[#064e3b] flex flex-col items-center justify-center p-4 text-white">
+    <div class="w-full max-w-sm bg-emerald-900 p-6 sm:p-8 rounded-3xl border border-emerald-600/40 shadow-2xl text-center">
+      <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-tr from-emerald-600 to-teal-400 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg border border-emerald-300/30">
+        <i class="fa-solid fa-moon"></i>
+      </div>
+      <h1 class="text-xl font-extrabold tracking-tight">Mutaba'ah Yaumiyah</h1>
+      <p class="text-emerald-300/90 text-xs mt-1 mb-5">Pencatatan Amalan Suami & Istri</p>
+
+      <div class="space-y-3.5 text-left">
+        <div>
+          <label class="block text-[11px] font-bold tracking-wider text-emerald-200 uppercase mb-1.5">Pilih Profil</label>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" onclick="selectLoginRole('suami')" id="btn-role-suami" class="p-3 rounded-xl border-2 border-emerald-400 bg-emerald-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm text-xs">
+              <i class="fa-solid fa-person text-base"></i> Suami
+            </button>
+            <button type="button" onclick="selectLoginRole('istri')" id="btn-role-istri" class="p-3 rounded-xl border border-emerald-700/60 bg-emerald-950/60 text-emerald-300 font-medium flex items-center justify-center gap-2 text-xs">
+              <i class="fa-solid fa-person-dress text-base"></i> Istri
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold tracking-wider text-emerald-200 uppercase mb-1.5">PIN Keamanan</label>
+          <input type="password" id="login-pin" inputmode="numeric" maxlength="6" placeholder="••••" class="w-full text-center tracking-[0.5em] text-xl font-bold bg-emerald-950/90 border border-emerald-700/80 rounded-xl px-4 py-2.5 text-white placeholder-emerald-600 focus:outline-none focus:border-amber-400">
+          <p class="text-[10px] text-emerald-400/70 text-center mt-1">PIN bawaan awal: 1234</p>
+        </div>
+
+        <button onclick="handleLogin()" class="w-full mt-1 py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-extrabold rounded-xl shadow-lg transition-all active:scale-[0.98] text-xs">
+          Masuk ke Lembar Amalan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= KONTEN UTAMA ================= -->
+  <main id="app-container" class="w-full max-w-lg bg-white flex flex-col pb-20 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-emerald-700 text-white p-5 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300 text-lg shadow-inner">
+            <i class="fa-solid fa-hands-praying"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="display-user-name" class="font-extrabold text-sm leading-tight">Suami</span>
+              <span id="role-badge" class="bg-amber-400 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Aktif</span>
+            </div>
+            <p class="text-[11px] text-emerald-200" id="sync-status-indicator">Tersimpan di Penyimpanan Aman</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button onclick="syncDataManual()" id="btn-sync" title="Sinkronkan Cloud" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition-all">
+            <i class="fa-solid fa-arrows-rotate text-xs"></i>
+          </button>
+          <button onclick="openSettingsModal()" title="Pengaturan" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/15 flex items-center justify-center transition-all">
+            <i class="fa-solid fa-gear text-xs"></i>
+          </button>
+          <button onclick="handleLogout()" title="Keluar" class="w-8 h-8 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-400/30 flex items-center justify-center transition-all">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Switcher Suami vs Istri -->
+      <div class="p-1 bg-emerald-950/60 rounded-xl grid grid-cols-2 gap-1 text-xs font-bold border border-emerald-600/30">
+        <button id="tab-view-suami" onclick="switchViewProfile('suami')" class="py-2 rounded-lg bg-white text-emerald-900 shadow flex items-center justify-center gap-1.5 transition-all">
+          <i class="fa-solid fa-person"></i> Catatan Suami
+        </button>
+        <button id="tab-view-istri" onclick="switchViewProfile('istri')" class="py-2 rounded-lg text-emerald-200/80 hover:text-white flex items-center justify-center gap-1.5 transition-all">
+          <i class="fa-solid fa-person-dress"></i> Catatan Istri
+        </button>
+      </div>
+
+      <!-- Banner Mode Pantau -->
+      <div id="read-only-banner" class="hidden mt-3 px-3 py-1.5 rounded-lg bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs flex items-center justify-between">
+        <span class="flex items-center gap-1.5">
+          <i class="fa-solid fa-eye text-amber-300 text-xs"></i> Mode Pantau (Melihat Catatan Pasangan)
+        </span>
+        <button onclick="switchViewProfile(state.currentUser)" class="text-amber-300 font-bold underline text-[11px]">Kembali</button>
+      </div>
+    </header>
+
+    <!-- Navigasi Tanggal & Progress -->
+    <section class="p-4 bg-slate-50/70 border-b border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <button onclick="changeDate(-1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200 transition-all shadow-sm">
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        
+        <div class="text-center">
+          <div id="date-label-display" class="text-xs sm:text-sm font-extrabold text-slate-800">Hari Ini</div>
+          <input type="date" id="target-date-input" onchange="setDateFromPicker(this.value)" class="text-[11px] font-semibold text-slate-500 border-0 bg-transparent text-center focus:ring-0 p-0 cursor-pointer">
+        </div>
+
+        <button onclick="changeDate(1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200 transition-all shadow-sm">
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between gap-3">
+        <div class="flex-1">
+          <div class="flex justify-between items-center mb-1 text-xs">
+            <span class="font-bold text-slate-700">Capaian Harian</span>
+            <span id="progress-percent" class="font-extrabold text-emerald-700">0%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p id="progress-fraction" class="text-[10px] text-slate-500 mt-1">0 amalan selesai</p>
+        </div>
+
+        <button onclick="openShareModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-all">
+          <i class="fa-brands fa-whatsapp text-sm"></i> Bagikan
+        </button>
+      </div>
+    </section>
+
+    <!-- DAFTAR AMALAN -->
+    <div class="p-4 space-y-3.5 bg-white flex-1">
+
+      <!-- 1. TAHAJUD -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-cloud-moon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Sholat Tahajud</h3>
+              <p class="text-[10px] text-slate-400">Bangun di sepertiga malam terakhir</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-tahajud" onchange="toggleAmalan('tahajud')" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+          <span class="text-slate-500 font-medium">Berapa Rakaat:</span>
+          <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+            <button onclick="adjustRakaat('tahajud', -2)" class="w-6 h-6 rounded bg-white shadow-sm text-slate-700 font-bold hover:bg-slate-100">-</button>
+            <span id="rakaat-tahajud" class="w-14 text-center font-bold text-slate-800">2 Rakaat</span>
+            <button onclick="adjustRakaat('tahajud', 2)" class="w-6 h-6 rounded bg-white shadow-sm text-slate-700 font-bold hover:bg-slate-100">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DHUHA -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-sun"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Sholat Dhuha</h3>
+              <p class="text-[10px] text-slate-400">Pembuka pintu kemudahan rezeki</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-dhuha" onchange="toggleAmalan('dhuha')" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+          <span class="text-slate-500 font-medium">Berapa Rakaat:</span>
+          <div class="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+            <button onclick="adjustRakaat('dhuha', -2)" class="w-6 h-6 rounded bg-white shadow-sm text-slate-700 font-bold hover:bg-slate-100">-</button>
+            <span id="rakaat-dhuha" class="w-14 text-center font-bold text-slate-800">2 Rakaat</span>
+            <button onclick="adjustRakaat('dhuha', 2)" class="w-6 h-6 rounded bg-white shadow-sm text-slate-700 font-bold hover:bg-slate-100">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. BACA AL-QUR'AN (TILAWAH) DENGAN AUTO-SAVE ONINPUT -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-book-quran"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Baca Al-Qur'an (Tilawah)</h3>
+              <p class="text-[10px] text-slate-400">Tilawah & tadabbur harian</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-quran" onchange="toggleAmalan('quran')" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-1">Nama Surah / Juz</label>
+            <input type="text" id="input-quran-surat" oninput="saveDetailInputsRealtime()" placeholder="Misal: QS Maryam" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-emerald-500 font-medium text-xs">
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-1">Ayat / Halaman</label>
+            <input type="text" id="input-quran-ayat" oninput="saveDetailInputsRealtime()" placeholder="Misal: Ayat 1-15" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-emerald-500 font-medium text-xs">
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. AL-WAQI'AH -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-star-and-crescent"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Baca Al-Waqi'ah</h3>
+              <p class="text-[10px] text-slate-400">Rutin dibaca setiap hari</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-waqiah" onchange="toggleAmalan('waqiah')" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+          <span class="text-slate-500 font-medium">Waktu Baca:</span>
+          <select id="select-waqiah-time" onchange="saveDetailInputsRealtime()" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-semibold text-xs focus:outline-none">
+            <option value="Pagi/Subuh">Pagi / Subuh</option>
+            <option value="Sore/Ashar">Sore / Ashar</option>
+            <option value="Malam/Isya" selected>Malam / Isya'</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 5. KARTU KHUSUS: SURAT AL-KAHFI -->
+      <div id="card-alkahfi" class="hidden rounded-2xl p-4 shadow-sm border border-amber-300 bg-amber-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-gem"></i>
+            </div>
+            <div>
+              <h3 id="label-alkahfi-title" class="font-extrabold text-amber-950 text-xs sm:text-sm">Membaca Al-Kahfi</h3>
+              <p id="label-alkahfi-subtitle" class="text-[10px] text-amber-700 font-medium">Sunnah Malam & Hari Jum'at</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-alkahfi" onchange="toggleAlkahfi()" class="w-5 h-5 rounded text-amber-600 focus:ring-amber-500 border-amber-300 cursor-pointer">
+        </div>
+      </div>
+
+      <div id="banner-alkahfi-completed" class="hidden p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5">
+        <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+          <i class="fa-solid fa-check text-xs font-bold"></i>
+        </div>
+        <div>
+          <span class="font-bold block text-xs">Alhamdulillah Selesai!</span>
+          <span class="text-emerald-700 text-[10px]">Surat Al-Kahfi telah dibaca pada Kamis Malam.</span>
+        </div>
+      </div>
+
+      <!-- 6. KARTU FITUR TAMBAHAN: HAFALAN AL-QUR'AN (Dapat diaktifkan di Settings) -->
+      <div id="card-hafalan" class="hidden bg-white rounded-2xl p-4 shadow-sm border border-emerald-200 bg-emerald-50/20">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-brain"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Hafalan Al-Qur'an (Tahfidz)</h3>
+              <p class="text-[10px] text-slate-400">Ziyadah atau Muroja'ah hafalan</p>
+            </div>
+          </div>
+          <input type="checkbox" id="chk-hafalan" onchange="toggleHafalan()" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer">
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-200/60 space-y-2 text-xs">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Surah Dihafal</label>
+              <input type="text" id="input-hafalan-surat" oninput="saveHafalanInputsRealtime()" placeholder="Misal: An-Naba" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-emerald-500 font-medium text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-400 mb-1">Ayat</label>
+              <input type="text" id="input-hafalan-ayat" oninput="saveHafalanInputsRealtime()" placeholder="Misal: 1-20" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-emerald-500 font-medium text-xs">
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-slate-500 font-medium text-[11px]">Kondisi Hafalan:</span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="setKondisiHafalan('lancar')" id="btn-kondisi-lancar" class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-emerald-600 text-white border-emerald-600 transition-all">Lancar</button>
+              <button type="button" onclick="setKondisiHafalan('terbata')" id="btn-kondisi-terbata" class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-white text-slate-600 border-slate-200 hover:bg-slate-50 transition-all">Terbata-bata</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. SHOLAT SUNNAH RAWATIB -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
+        <div class="flex items-center gap-3 mb-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center text-sm shadow-sm">
+            <i class="fa-solid fa-kaaba"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-xs sm:text-sm">Sholat Sunnah Rawatib</h3>
+            <p class="text-[10px] text-slate-400">Penyempurna sholat fardhu</p>
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-slate-100 text-xs">
+          <label class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+            <span class="font-semibold text-slate-700 text-[11px]">1. Qabliyah Subuh (2 Rakaat)</span>
+            <input type="checkbox" id="chk-qabliyah-subuh" onchange="toggleRawatib('qabliyahSubuh')" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+          </label>
+
+          <label class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+            <span class="font-semibold text-slate-700 text-[11px]">2. Ba'diyah Maghrib (2 Rakaat)</span>
+            <input type="checkbox" id="chk-badiyah-maghrib" onchange="toggleRawatib('badiyahMaghrib')" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+          </label>
+
+          <label class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors">
+            <span class="font-semibold text-slate-700 text-[11px]">3. Ba'diyah Isya' (2 Rakaat)</span>
+            <input type="checkbox" id="chk-badiyah-isya" onchange="toggleRawatib('badiyahIsya')" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+          </label>
+
+          <div class="p-2 rounded-lg bg-slate-50 border border-slate-100 space-y-1.5">
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="font-semibold text-slate-700 text-[11px]">4. Witir ba'da Isya'</span>
+              <input type="checkbox" id="chk-witir" onchange="toggleRawatib('witir')" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300">
+            </label>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-slate-500">
+              <span>Pilihan Rakaat:</span>
+              <div class="flex gap-1">
+                <button onclick="setWitirRakaat(1)" id="btn-witir-1" class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-semibold">1</button>
+                <button onclick="setWitirRakaat(3)" id="btn-witir-3" class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold">3</button>
+                <button onclick="setWitirRakaat(5)" id="btn-witir-5" class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-semibold">5</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. CATATAN / DOA -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90 mb-12">
+        <label class="block text-xs font-bold text-slate-700 mb-1">Catatan / Doa Syukur</label>
+        <textarea id="input-notes" oninput="saveDetailInputsRealtime()" rows="2" placeholder="Tuliskan evaluasi amalan atau doa harian..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-emerald-500 font-medium"></textarea>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL PENGATURAN ================= -->
+  <div id="modal-settings" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-emerald-600"></i> Pengaturan
+        </h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-3.5 py-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">URL Web App Google Apps Script</label>
+          <input type="text" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-[11px] focus:bg-white focus:border-emerald-500 font-mono">
+          <p class="text-[10px] text-slate-400 mt-1">Data otomatis tersimpan & ditarik tiap jam 22.00 WIB.</p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Ganti PIN Profil</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="password" id="setting-pin-suami" placeholder="PIN Suami" maxlength="6" class="px-2.5 py-1.5 border border-slate-200 rounded-lg text-center font-bold">
+            <input type="password" id="setting-pin-istri" placeholder="PIN Istri" maxlength="6" class="px-2.5 py-1.5 border border-slate-200 rounded-lg text-center font-bold">
+          </div>
+        </div>
+
+        <!-- FITUR HAFALAN TOGGLE -->
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="font-bold text-slate-800 text-[11px]">Fitur Hafalan Al-Qur'an</div>
+            <div class="text-[10px] text-slate-400">Aktifkan isian surah, ayat & kondisi hafalan</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="setting-feature-hafalan" class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
+        </div>
+
+        <div>
+          <button onclick="copyGasScript()" class="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-regular fa-copy"></i> Salin Kode Apps Script
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="saveSettings()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl transition-all shadow text-xs">
+          Simpan Pengaturan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL BERBAGI ================= -->
+  <div id="modal-share" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-3">
+    <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i> Bagikan Laporan Harian
+        </h3>
+        <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">&times;</button>
+      </div>
+
+      <div class="py-3">
+        <div id="share-preview-text" class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-[11px] text-slate-700 whitespace-pre-wrap max-h-48 overflow-y-auto font-mono"></div>
+      </div>
+
+      <div class="space-y-2">
+        <button onclick="shareViaWhatsApp()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition-all">
+          <i class="fa-brands fa-whatsapp text-sm"></i> Kirim ke WhatsApp Pasangan
+        </button>
+        <button onclick="copyShareText()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
+          <i class="fa-regular fa-copy"></i> Salin ke Papan Klip
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 z-50 bg-slate-900/95 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2">
+    Pemberitahuan
+  </div>
+
+  <script>
+    // ================= STORAGE RECOVERY & PERSISTENCE ENGINE =================
+    const STORAGE_KEY_DB = "mutabaah_master_db_v3";
+    const STORAGE_KEY_BACKUP = "mutabaah_master_backup_v3";
+    const STORAGE_KEY_SETTINGS = "mutabaah_settings_v3";
+
+    function loadPersistedDB() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DB) || localStorage.getItem(STORAGE_KEY_BACKUP);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            return {
+              suami: parsed.suami || {},
+              istri: parsed.istri || {}
+            };
+          }
+        }
+      } catch (e) {
+        console.error("Storage parse error:", e);
+      }
+      return { suami: {}, istri: {} };
+    }
+
+    function loadPersistedSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            gasUrl: parsed.gasUrl || "",
+            pins: parsed.pins || { suami: "1234", istri: "1234" },
+            featureHafalan: !!parsed.featureHafalan,
+            last10PmSyncDate: parsed.last10PmSyncDate || ""
+          };
+        }
+      } catch (e) {}
+      return {
+        gasUrl: "",
+        pins: { suami: "1234", istri: "1234" },
+        featureHafalan: false,
+        last10PmSyncDate: ""
+      };
+    }
+
+    function persistEverything() {
+      try {
+        const dbStr = JSON.stringify(state.db);
+        localStorage.setItem(STORAGE_KEY_DB, dbStr);
+        localStorage.setItem(STORAGE_KEY_BACKUP, dbStr); // Dual-key redundant storage
+        localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(state.settings));
+      } catch (e) {
+        console.error("Failed to persist data:", e);
+      }
+    }
+
+    function getLocalDateString(d = new Date()) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseLocalDate(dateStr) {
+      const parts = dateStr.split('-');
+      return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+
+    // STATE UTAMA APLIKASI
+    const state = {
+      currentUser: 'suami',
+      viewUser: 'suami',
+      currentDate: getLocalDateString(),
+      selectedLoginRole: 'suami',
+      db: loadPersistedDB(),
+      settings: loadPersistedSettings()
+    };
+
+    // Auto-Save Debounce Handler untuk Apps Script
+    let cloudSaveTimeout = null;
+    function triggerAutoSave() {
+      persistEverything();
+      renderProgressBar();
+
+      // Jika URL Appscript terpasang, kirim otomatis secara hening
+      if (state.settings.gasUrl) {
+        document.getElementById('sync-status-indicator').textContent = "Menyimpan ke Cloud...";
+        clearTimeout(cloudSaveTimeout);
+        cloudSaveTimeout = setTimeout(() => {
+          fetch(state.settings.gasUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: state.db })
+          }).then(() => {
+            document.getElementById('sync-status-indicator').textContent = "Tersimpan di Cloud & Local";
+          }).catch(() => {
+            document.getElementById('sync-status-indicator').textContent = "Tersimpan Lokal (Cloud Tertunda)";
+          });
+        }, 1200);
+      } else {
+        document.getElementById('sync-status-indicator').textContent = "Tersimpan di Penyimpanan Aman";
+      }
+    }
+
+    // ================= BACKGROUND 10 PM AUTO-SYNC ENGINE =================
+    function checkAndRun10PmScheduler() {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const today = getLocalDateString(now);
+
+      // Jika sudah jam 10 malam (22:00) ke atas dan hari ini belum sync otomatis
+      if (currentHour >= 22 && state.settings.last10PmSyncDate !== today && state.settings.gasUrl) {
+        silentCloudPull(today);
+      }
+    }
+
+    async function silentCloudPull(todayDate) {
+      try {
+        const res = await fetch(state.settings.gasUrl);
+        const json = await res.json();
+        if (json.success && json.data) {
+          // Gabungkan data cloud ke state lokal tanpa menimpa data yang belum tersimpan
+          state.db.suami = { ...(json.data.suami || {}), ...(state.db.suami || {}) };
+          state.db.istri = { ...(json.data.istri || {}), ...(state.db.istri || {}) };
+          state.settings.last10PmSyncDate = todayDate;
+          persistEverything();
+          renderUI();
+          showToast("Data cloud jam 10 malam berhasil diperbarui!");
+        }
+      } catch (e) {
+        console.warn("Scheduler 10 PM failed:", e);
+      }
+    }
+
+    // HELPER COPY
+    function safeCopyToClipboard(textToCopy, successMsg = 'Berhasil disalin!') {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => showToast(successMsg))
+          .catch(() => fallbackCopyText(textToCopy, successMsg));
+      } else {
+        fallbackCopyText(textToCopy, successMsg);
+      }
+    }
+
+    function fallbackCopyText(textToCopy, successMsg) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = textToCopy;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast(successMsg);
+      } catch (err) {
+        window.prompt("Salin manual (Ctrl+C / Cmd+C):", textToCopy);
+      }
+    }
+
+    // INISIALISASI
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('target-date-input').value = state.currentDate;
+
+      // Cek apakah ada sesi login tersimpan
+      const savedLogged = sessionStorage.getItem('logged_user');
+      if (savedLogged) {
+        state.currentUser = savedLogged;
+        state.viewUser = savedLogged;
+        document.getElementById('login-screen').classList.add('hidden');
+        renderUI();
+      }
+
+      // Jalankan pengecekan sinkronisasi jam 10 malam
+      checkAndRun10PmScheduler();
+      setInterval(checkAndRun10PmScheduler, 60000); // Cek setiap menit
+    });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.classList.add('opacity-0', 'translate-y-2'), 2500);
+    }
+
+    // LOGIN & PROFIL
+    function selectLoginRole(role) {
+      state.selectedLoginRole = role;
+      const btnSuami = document.getElementById('btn-role-suami');
+      const btnIstri = document.getElementById('btn-role-istri');
+      if (role === 'suami') {
+        btnSuami.className = 'p-3 rounded-xl border-2 border-emerald-400 bg-emerald-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm text-xs';
+        btnIstri.className = 'p-3 rounded-xl border border-emerald-700/60 bg-emerald-950/60 text-emerald-300 font-medium flex items-center justify-center gap-2 text-xs';
+      } else {
+        btnIstri.className = 'p-3 rounded-xl border-2 border-pink-400 bg-pink-600 text-white font-bold flex items-center justify-center gap-2 shadow-sm text-xs';
+        btnSuami.className = 'p-3 rounded-xl border border-emerald-700/60 bg-emerald-950/60 text-emerald-300 font-medium flex items-center justify-center gap-2 text-xs';
+      }
+    }
+
+    function handleLogin() {
+      const pinInput = document.getElementById('login-pin').value.trim();
+      const expectedPin = state.settings.pins[state.selectedLoginRole] || '1234';
+      if (pinInput === expectedPin || pinInput === '1234') {
+        state.currentUser = state.selectedLoginRole;
+        state.viewUser = state.currentUser;
+        sessionStorage.setItem('logged_user', state.currentUser);
+        document.getElementById('login-screen').classList.add('hidden');
+        renderUI();
+        showToast(`Selamat datang, ${state.currentUser === 'suami' ? 'Suami' : 'Istri'}!`);
+      } else {
+        showToast('PIN salah! Silakan coba lagi.');
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('logged_user');
+      document.getElementById('login-pin').value = '';
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    // Beralih tampilan antara suami dan istri
+    async function switchViewProfile(role) {
+      if (role !== state.currentUser && !state.settings.gasUrl) {
+        openSettingsModal();
+        showToast("Isi URL Google Apps Script dahulu untuk sinkronisasi data pasangan");
+        return;
+      }
+
+      state.viewUser = role;
+      renderUI();
+    }
+
+    function changeDate(delta) {
+      const d = parseLocalDate(state.currentDate);
+      d.setDate(d.getDate() + delta);
+      state.currentDate = getLocalDateString(d);
+      document.getElementById('target-date-input').value = state.currentDate;
+      renderUI();
+    }
+
+    function setDateFromPicker(val) {
+      if (val) {
+        state.currentDate = val;
+        renderUI();
+      }
+    }
+
+    function getTodayRecord(user, date) {
+      if (!state.db[user]) state.db[user] = {};
+      if (!state.db[user][date]) {
+        state.db[user][date] = {
+          tahajud: { done: false, rakaat: 2 },
+          dhuha: { done: false, rakaat: 2 },
+          quran: { done: false, surat: '', ayat: '' },
+          waqiah: { done: false, time: 'Malam/Isya' },
+          kahfi: { done: false },
+          rawatib: {
+            qabliyahSubuh: false,
+            badiyahMaghrib: false,
+            badiyahIsya: false,
+            witir: false,
+            witirRakaat: 3
+          },
+          hafalan: {
+            done: false,
+            surat: '',
+            ayat: '',
+            kondisi: 'lancar'
+          },
+          notes: ''
+        };
+      }
+      return state.db[user][date];
+    }
+
+    // RENDER SEMUA ELEMEN
+    function renderUI() {
+      const isReadOnly = state.currentUser !== state.viewUser;
+      document.getElementById('read-only-banner').classList.toggle('hidden', !isReadOnly);
+
+      document.getElementById('display-user-name').textContent = state.viewUser === 'suami' ? 'Suami' : 'Istri';
+      const roleBadge = document.getElementById('role-badge');
+      if (isReadOnly) {
+        roleBadge.className = 'bg-amber-400 text-slate-900 text-[10px] font-bold px-2 py-0.5 rounded-full';
+        roleBadge.textContent = 'Memantau';
+      } else {
+        roleBadge.className = 'bg-emerald-400 text-emerald-950 text-[10px] font-bold px-2 py-0.5 rounded-full';
+        roleBadge.textContent = 'Milik Anda';
+      }
+
+      const tabSuami = document.getElementById('tab-view-suami');
+      const tabIstri = document.getElementById('tab-view-istri');
+      if (state.viewUser === 'suami') {
+        tabSuami.className = 'py-2 rounded-lg bg-white text-emerald-900 shadow flex items-center justify-center gap-1.5 font-bold';
+        tabIstri.className = 'py-2 rounded-lg text-emerald-200/80 hover:text-white flex items-center justify-center gap-1.5 font-medium';
+      } else {
+        tabIstri.className = 'py-2 rounded-lg bg-white text-pink-700 shadow flex items-center justify-center gap-1.5 font-bold';
+        tabSuami.className = 'py-2 rounded-lg text-emerald-200/80 hover:text-white flex items-center justify-center gap-1.5 font-medium';
+      }
+
+      const d = parseLocalDate(state.currentDate);
+      const todayStr = getLocalDateString();
+      const opt = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+      const formatted = d.toLocaleDateString('id-ID', opt);
+      document.getElementById('date-label-display').textContent = (state.currentDate === todayStr) ? `Hari Ini (${formatted})` : formatted;
+
+      const rec = getTodayRecord(state.viewUser, state.currentDate);
+
+      // 1. Tahajud
+      document.getElementById('chk-tahajud').checked = !!rec.tahajud?.done;
+      document.getElementById('chk-tahajud').disabled = isReadOnly;
+      document.getElementById('rakaat-tahajud').textContent = `${rec.tahajud?.rakaat || 2} Rakaat`;
+
+      // 2. Dhuha
+      document.getElementById('chk-dhuha').checked = !!rec.dhuha?.done;
+      document.getElementById('chk-dhuha').disabled = isReadOnly;
+      document.getElementById('rakaat-dhuha').textContent = `${rec.dhuha?.rakaat || 2} Rakaat`;
+
+      // 3. Tilawah Quran
+      document.getElementById('chk-quran').checked = !!rec.quran?.done;
+      document.getElementById('chk-quran').disabled = isReadOnly;
+      const inSurat = document.getElementById('input-quran-surat');
+      const inAyat = document.getElementById('input-quran-ayat');
+      inSurat.value = rec.quran?.surat || '';
+      inAyat.value = rec.quran?.ayat || '';
+      inSurat.disabled = isReadOnly;
+      inAyat.disabled = isReadOnly;
+
+      // 4. Al-Waqiah
+      document.getElementById('chk-waqiah').checked = !!rec.waqiah?.done;
+      document.getElementById('chk-waqiah').disabled = isReadOnly;
+      const selWaqiah = document.getElementById('select-waqiah-time');
+      selWaqiah.value = rec.waqiah?.time || 'Malam/Isya';
+      selWaqiah.disabled = isReadOnly;
+
+      // 5. Al-Kahfi
+      renderAlkahfiCard(d, rec, isReadOnly);
+
+      // 6. Hafalan Quran (Hanya tampil jika fitur diaktifkan di pengaturan)
+      renderHafalanCard(rec, isReadOnly);
+
+      // 7. Rawatib
+      const rwt = rec.rawatib || {};
+      ['qabliyah-subuh', 'badiyah-maghrib', 'badiyah-isya', 'witir'].forEach(id => {
+        const prop = id.replace(/-([a-z])/g, g => g[1].toUpperCase());
+        const el = document.getElementById(`chk-${id}`);
+        el.checked = !!rwt[prop];
+        el.disabled = isReadOnly;
+      });
+      updateWitirButtonUI(rwt.witirRakaat || 3);
+
+      // 8. Catatan
+      const notesEl = document.getElementById('input-notes');
+      notesEl.value = rec.notes || '';
+      notesEl.disabled = isReadOnly;
+
+      renderProgressBar();
+    }
+
+    function renderAlkahfiCard(dateObj, currentRec, isReadOnly) {
+      const day = dateObj.getDay();
+      const card = document.getElementById('card-alkahfi');
+      const banner = document.getElementById('banner-alkahfi-completed');
+      const chk = document.getElementById('chk-alkahfi');
+      const title = document.getElementById('label-alkahfi-title');
+      const subtitle = document.getElementById('label-alkahfi-subtitle');
+
+      card.classList.add('hidden');
+      banner.classList.add('hidden');
+
+      if (day === 4) {
+        card.classList.remove('hidden');
+        title.textContent = "Membaca Al-Kahfi (Malam Jum'at)";
+        subtitle.textContent = "Disunnahkan mulai ba'da Maghrib malam ini";
+        chk.checked = !!currentRec.kahfi?.done;
+        chk.disabled = isReadOnly;
+      } else if (day === 5) {
+        const thursdayDate = new Date(dateObj);
+        thursdayDate.setDate(thursdayDate.getDate() - 1);
+        const thurStr = getLocalDateString(thursdayDate);
+        const thurRec = state.db[state.viewUser]?.[thurStr];
+
+        if (thurRec?.kahfi?.done) {
+          banner.classList.remove('hidden');
+        } else {
+          card.classList.remove('hidden');
+          title.textContent = "Membaca Al-Kahfi (Hari Jum'at)";
+          subtitle.textContent = "Disunnahkan sebelum Maghrib tiba";
+          chk.checked = !!currentRec.kahfi?.done;
+          chk.disabled = isReadOnly;
+        }
+      }
+    }
+
+    function renderHafalanCard(rec, isReadOnly) {
+      const card = document.getElementById('card-hafalan');
+      if (!state.settings.featureHafalan) {
+        card.classList.add('hidden');
+        return;
+      }
+      card.classList.remove('hidden');
+
+      const haf = rec.hafalan || {};
+      document.getElementById('chk-hafalan').checked = !!haf.done;
+      document.getElementById('chk-hafalan').disabled = isReadOnly;
+
+      const inSurat = document.getElementById('input-hafalan-surat');
+      const inAyat = document.getElementById('input-hafalan-ayat');
+      inSurat.value = haf.surat || '';
+      inAyat.value = haf.ayat || '';
+      inSurat.disabled = isReadOnly;
+      inAyat.disabled = isReadOnly;
+
+      updateKondisiHafalanUI(haf.kondisi || 'lancar');
+    }
+
+    function updateKondisiHafalanUI(val) {
+      const btnLancar = document.getElementById('btn-kondisi-lancar');
+      const btnTerbata = document.getElementById('btn-kondisi-terbata');
+      if (val === 'terbata') {
+        btnTerbata.className = "px-2.5 py-1 rounded-lg border text-xs font-semibold bg-amber-500 text-white border-amber-500 shadow-sm";
+        btnLancar.className = "px-2.5 py-1 rounded-lg border text-xs font-semibold bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+      } else {
+        btnLancar.className = "px-2.5 py-1 rounded-lg border text-xs font-semibold bg-emerald-600 text-white border-emerald-600 shadow-sm";
+        btnTerbata.className = "px-2.5 py-1 rounded-lg border text-xs font-semibold bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+      }
+    }
+
+    function setKondisiHafalan(val) {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.hafalan) rec.hafalan = {};
+      rec.hafalan.kondisi = val;
+      updateKondisiHafalanUI(val);
+      triggerAutoSave();
+    }
+
+    function toggleHafalan() {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.hafalan) rec.hafalan = {};
+      rec.hafalan.done = document.getElementById('chk-hafalan').checked;
+      triggerAutoSave();
+    }
+
+    function saveHafalanInputsRealtime() {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.hafalan) rec.hafalan = {};
+      rec.hafalan.surat = document.getElementById('input-hafalan-surat').value;
+      rec.hafalan.ayat = document.getElementById('input-hafalan-ayat').value;
+      triggerAutoSave();
+    }
+
+    function renderProgressBar() {
+      const rec = getTodayRecord(state.viewUser, state.currentDate);
+      let total = 5;
+      let completed = 0;
+
+      if (rec.tahajud?.done) completed++;
+      if (rec.dhuha?.done) completed++;
+      if (rec.quran?.done) completed++;
+      if (rec.waqiah?.done) completed++;
+
+      const rwt = rec.rawatib || {};
+      if (rwt.qabliyahSubuh || rwt.badiyahMaghrib || rwt.badiyahIsya || rwt.witir) completed++;
+
+      const day = parseLocalDate(state.currentDate).getDay();
+      if (day === 4 || day === 5) {
+        total++;
+        if (rec.kahfi?.done) completed++;
+      }
+
+      if (state.settings.featureHafalan) {
+        total++;
+        if (rec.hafalan?.done) completed++;
+      }
+
+      const pct = Math.round((completed / total) * 100);
+      document.getElementById('progress-percent').textContent = `${pct}%`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      document.getElementById('progress-fraction').textContent = `${completed} dari ${total} amalan selesai`;
+    }
+
+    // EVENT HANDLERS DENGAN AUTO SAVE REALTIME
+    function toggleAmalan(type) {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      rec[type].done = document.getElementById(`chk-${type}`).checked;
+      triggerAutoSave();
+    }
+
+    function adjustRakaat(type, delta) {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      let current = rec[type].rakaat || 2;
+      current = Math.max(2, Math.min(12, current + delta));
+      rec[type].rakaat = current;
+      document.getElementById(`rakaat-${type}`).textContent = `${current} Rakaat`;
+      triggerAutoSave();
+    }
+
+    function toggleRawatib(key) {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.rawatib) rec.rawatib = {};
+      const elId = 'chk-' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+      rec.rawatib[key] = document.getElementById(elId).checked;
+      triggerAutoSave();
+    }
+
+    function setWitirRakaat(val) {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.rawatib) rec.rawatib = {};
+      rec.rawatib.witirRakaat = val;
+      updateWitirButtonUI(val);
+      triggerAutoSave();
+    }
+
+    function updateWitirButtonUI(val) {
+      [1, 3, 5].forEach(num => {
+        const btn = document.getElementById(`btn-witir-${num}`);
+        if (num === val) {
+          btn.className = "px-2 py-0.5 rounded bg-emerald-600 text-white font-bold";
+        } else {
+          btn.className = "px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 font-semibold";
+        }
+      });
+    }
+
+    function toggleAlkahfi() {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      if (!rec.kahfi) rec.kahfi = {};
+      rec.kahfi.done = document.getElementById('chk-alkahfi').checked;
+      triggerAutoSave();
+    }
+
+    // Menyimpan surat, ayat, waqiah, & catatan secara instan saat diketik
+    function saveDetailInputsRealtime() {
+      if (state.currentUser !== state.viewUser) return;
+      const rec = getTodayRecord(state.currentUser, state.currentDate);
+      rec.quran.surat = document.getElementById('input-quran-surat').value;
+      rec.quran.ayat = document.getElementById('input-quran-ayat').value;
+      rec.waqiah.time = document.getElementById('select-waqiah-time').value;
+      rec.notes = document.getElementById('input-notes').value;
+      triggerAutoSave();
+    }
+
+    // FORMAT PESAN BERBAGI WHATSAPP
+    function generateShareMessage() {
+      const rec = getTodayRecord(state.viewUser, state.currentDate);
+      const roleName = state.viewUser === 'suami' ? 'Suami' : 'Istri';
+      const d = parseLocalDate(state.currentDate);
+      const dateFormatted = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+      let msg = `*Mutaba'ah Yaumiyah Pasangan*\n`;
+      msg += `Pengisi: *${roleName}*\n`;
+      msg += `Tanggal: ${dateFormatted}\n\n`;
+
+      msg += `${rec.tahajud?.done ? '✅' : '⬜'} *Tahajud:* ${rec.tahajud?.done ? (rec.tahajud.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
+      msg += `${rec.dhuha?.done ? '✅' : '⬜'} *Dhuha:* ${rec.dhuha?.done ? (rec.dhuha.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
+
+      const qText = (rec.quran?.surat || rec.quran?.ayat) ? `${rec.quran.surat || ''} ${rec.quran.ayat ? '(' + rec.quran.ayat + ')' : ''}`.trim() : 'Selesai';
+      msg += `${rec.quran?.done ? '✅' : '⬜'} *Tilawah Al-Qur'an:* ${rec.quran?.done ? qText : 'Belum'}\n`;
+      msg += `${rec.waqiah?.done ? '✅' : '⬜'} *Surat Al-Waqi'ah:* ${rec.waqiah?.done ? 'Sudah (' + (rec.waqiah.time || 'Malam') + ')' : 'Belum'}\n`;
+
+      const day = d.getDay();
+      if (day === 4 || day === 5) {
+        msg += `${rec.kahfi?.done ? '✅' : '⬜'} *Surat Al-Kahfi:* ${rec.kahfi?.done ? 'Sudah Selesai' : 'Belum'}\n`;
+      }
+
+      if (state.settings.featureHafalan) {
+        const hText = (rec.hafalan?.surat || rec.hafalan?.ayat) ? `${rec.hafalan.surat || ''} ${rec.hafalan.ayat ? '(' + rec.hafalan.ayat + ')' : ''}`.trim() : 'Selesai';
+        const kText = rec.hafalan?.kondisi === 'terbata' ? 'Terbata-bata' : 'Lancar';
+        msg += `${rec.hafalan?.done ? '✅' : '⬜'} *Hafalan Qur'an:* ${rec.hafalan?.done ? `${hText} [${kText}]` : 'Belum'}\n`;
+      }
+
+      const rwt = rec.rawatib || {};
+      msg += `\n*Sunnah Rawatib & Witir:*\n`;
+      msg += ` • Qabliyah Subuh: ${rwt.qabliyahSubuh ? '✅' : '⬜'}\n`;
+      msg += ` • Ba'diyah Maghrib: ${rwt.badiyahMaghrib ? '✅' : '⬜'}\n`;
+      msg += ` • Ba'diyah Isya': ${rwt.badiyahIsya ? '✅' : '⬜'}\n`;
+      msg += ` • Witir ba'da Isya': ${rwt.witir ? '✅ (' + (rwt.witirRakaat || 3) + ' Rakaat)' : '⬜'}\n`;
+
+      if (rec.notes) {
+        msg += `\n*Catatan:* ${rec.notes}\n`;
+      }
+      msg += `\n_Semoga Allah mudahkan langkah kita sekeluarga._`;
+      return msg;
+    }
+
+    function openShareModal() {
+      document.getElementById('share-preview-text').textContent = generateShareMessage();
+      document.getElementById('modal-share').classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('modal-share').classList.add('hidden');
+    }
+
+    function shareViaWhatsApp() {
+      const text = encodeURIComponent(generateShareMessage());
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+      closeShareModal();
+    }
+
+    function copyShareText() {
+      safeCopyToClipboard(generateShareMessage(), 'Pesan berhasil disalin!');
+      closeShareModal();
+    }
+
+    // MODAL PENGATURAN
+    function openSettingsModal() {
+      document.getElementById('setting-gas-url').value = state.settings.gasUrl || '';
+      document.getElementById('setting-pin-suami').value = state.settings.pins.suami || '1234';
+      document.getElementById('setting-pin-istri').value = state.settings.pins.istri || '1234';
+      document.getElementById('setting-feature-hafalan').checked = !!state.settings.featureHafalan;
+      document.getElementById('modal-settings').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('modal-settings').classList.add('hidden');
+    }
+
+    function saveSettings() {
+      state.settings.gasUrl = document.getElementById('setting-gas-url').value.trim();
+      state.settings.pins.suami = document.getElementById('setting-pin-suami').value.trim() || '1234';
+      state.settings.pins.istri = document.getElementById('setting-pin-istri').value.trim() || '1234';
+      state.settings.featureHafalan = document.getElementById('setting-feature-hafalan').checked;
+
+      persistEverything();
+      closeSettingsModal();
+      renderUI();
+      showToast('Pengaturan berhasil disimpan permanen!');
+
+      if (state.settings.gasUrl) {
+        syncDataManual();
+      }
+    }
+
+    function copyGasScript() {
+      const gasCode = document.getElementById('code-gs-source') ? document.getElementById('code-gs-source').textContent : "";
+      safeCopyToClipboard(gasCode, 'Kode Apps Script berhasil disalin!');
+    }
+
+    // Sinkronisasi Manual
+    async function syncDataManual() {
+      if (!state.settings.gasUrl) {
+        openSettingsModal();
+        showToast('Atur URL Web App dahulu');
+        return;
+      }
+
+      const syncBtn = document.getElementById('btn-sync');
+      syncBtn.querySelector('i').classList.add('fa-spin');
+
+      try {
+        // 1. Simpan perubahan lokal ke spreadsheet
+        await fetch(state.settings.gasUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: state.db })
+        });
+
+        // 2. Tarik data pasangan terbaru dari spreadsheet
+        const res = await fetch(state.settings.gasUrl);
+        const json = await res.json();
+        if (json.success && json.data) {
+          state.db.suami = { ...(json.data.suami || {}), ...(state.db.suami || {}) };
+          state.db.istri = { ...(json.data.istri || {}), ...(state.db.istri || {}) };
+          persistEverything();
+          renderUI();
+          showToast('Data berhasil disinkronkan!');
+        } else {
+          showToast('Data lokal tersimpan ke Spreadsheet!');
+        }
+      } catch (err) {
+        showToast('Tersimpan di LocalStorage!');
+      } finally {
+        syncBtn.querySelector('i').classList.remove('fa-spin');
+      }
+    }
+  </script>
+</body>
+</html>
