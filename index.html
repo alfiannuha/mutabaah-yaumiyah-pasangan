@@ -9,9 +9,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -114,7 +112,27 @@
       </div>
     </header>
 
-    <!-- Navigasi Tanggal & Progress -->
+    <!-- ================= SWITCH FITUR HAID (KHUSUS ISTRI DI PALING ATAS) ================= -->
+    <div id="container-switch-haid" class="hidden px-4 pt-3.5 pb-1 bg-rose-50/70 border-b border-rose-100">
+      <div class="p-3 bg-white rounded-2xl border border-rose-200/80 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-sm shadow-sm">
+            <i class="fa-solid fa-droplet"></i>
+          </div>
+          <div>
+            <div class="font-extrabold text-xs text-rose-950">Sedang Haid / Menstruasi</div>
+            <div id="label-durasi-haid" class="text-[11px] font-semibold text-rose-600 mt-0.5">Hari ke-1</div>
+          </div>
+        </div>
+
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="switch-haid" onchange="toggleHaidIstri()" class="sr-only peer">
+          <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Navigasi Tanggal & Progress -->IP
     <section class="p-4 bg-slate-50/70 border-b border-slate-200">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200">
         <button onclick="changeDate(-1)" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center border border-slate-200 transition-all shadow-sm">
@@ -149,8 +167,18 @@
       </div>
     </section>
 
-    <!-- DAFTAR AMALAN -->
-    <div class="p-4 space-y-3.5 bg-white flex-1">
+    <!-- BANNER SAAT HAID AKTIF -->
+    <div id="banner-haid-active" class="hidden m-4 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 space-y-2">
+      <div class="flex items-center gap-2 font-bold text-xs text-rose-800">
+        <i class="fa-solid fa-heart-circle-check text-rose-500 text-sm"></i> Sedang Istirahat Beribadah Sholat & Tilawah
+      </div>
+      <p class="text-[11px] text-rose-700 leading-relaxed">
+        Alhamdulillah, istirahat dari kewajiban sholat dan puasa adalah syariat dan bernilai pahala ketaatan. Perbanyaklah dzikir pagi-petang, shalawat, istighfar, dan doa-doa kebaikan.
+      </p>
+    </div>
+
+    <!-- DAFTAR AMALAN (DISEMBUNYIKAN SAAT HAID) -->
+    <div id="container-amalan-list" class="p-4 space-y-3.5 bg-white flex-1">
 
       <!-- 1. TAHAJUD -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
@@ -202,7 +230,7 @@
         </div>
       </div>
 
-      <!-- 3. BACA AL-QUR'AN (TILAWAH) DENGAN AUTO-SAVE ONINPUT -->
+      <!-- 3. BACA AL-QUR'AN (TILAWAH) -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -254,7 +282,7 @@
         </div>
       </div>
 
-      <!-- 5. KARTU KHUSUS: SURAT AL-KAHFI -->
+      <!-- 5. SURAT AL-KAHFI -->
       <div id="card-alkahfi" class="hidden rounded-2xl p-4 shadow-sm border border-amber-300 bg-amber-50">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -280,7 +308,7 @@
         </div>
       </div>
 
-      <!-- 6. KARTU FITUR TAMBAHAN: HAFALAN AL-QUR'AN (Dapat diaktifkan di Settings) -->
+      <!-- 6. HAFALAN AL-QUR'AN -->
       <div id="card-hafalan" class="hidden bg-white rounded-2xl p-4 shadow-sm border border-emerald-200 bg-emerald-50/20">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -362,12 +390,14 @@
         </div>
       </div>
 
-      <!-- 8. CATATAN / DOA -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90 mb-12">
+    </div>
+
+    <!-- 8. CATATAN / DOA (SELALU TAMPIL) -->
+    <div class="px-4 pb-12 bg-white">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/90">
         <label class="block text-xs font-bold text-slate-700 mb-1">Catatan / Doa Syukur</label>
         <textarea id="input-notes" oninput="saveDetailInputsRealtime()" rows="2" placeholder="Tuliskan evaluasi amalan atau doa harian..." class="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-emerald-500 font-medium"></textarea>
       </div>
-
     </div>
   </main>
 
@@ -396,22 +426,15 @@
           </div>
         </div>
 
-        <!-- FITUR HAFALAN TOGGLE -->
         <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
           <div>
             <div class="font-bold text-slate-800 text-[11px]">Fitur Hafalan Al-Qur'an</div>
-            <div class="text-[10px] text-slate-400">Aktifkan isian surah, ayat & kondisi hafalan</div>
+            <div class="text-[10px] text-slate-400">Aktifkan isian surah & ayat hafalan</div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="setting-feature-hafalan" class="sr-only peer">
             <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
           </label>
-        </div>
-
-        <div>
-          <button onclick="copyGasScript()" class="w-full py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all">
-            <i class="fa-regular fa-copy"></i> Salin Kode Apps Script
-          </button>
         </div>
       </div>
 
@@ -472,7 +495,7 @@
           }
         }
       } catch (e) {
-        console.error("Storage parse error:", e);
+        console.error("Storage error:", e);
       }
       return { suami: {}, istri: {} };
     }
@@ -502,11 +525,9 @@
       try {
         const dbStr = JSON.stringify(state.db);
         localStorage.setItem(STORAGE_KEY_DB, dbStr);
-        localStorage.setItem(STORAGE_KEY_BACKUP, dbStr); // Dual-key redundant storage
+        localStorage.setItem(STORAGE_KEY_BACKUP, dbStr);
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(state.settings));
-      } catch (e) {
-        console.error("Failed to persist data:", e);
-      }
+      } catch (e) {}
     }
 
     function getLocalDateString(d = new Date()) {
@@ -521,7 +542,6 @@
       return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
     }
 
-    // STATE UTAMA APLIKASI
     const state = {
       currentUser: 'suami',
       viewUser: 'suami',
@@ -531,13 +551,11 @@
       settings: loadPersistedSettings()
     };
 
-    // Auto-Save Debounce Handler untuk Apps Script
     let cloudSaveTimeout = null;
     function triggerAutoSave() {
       persistEverything();
       renderProgressBar();
 
-      // Jika URL Appscript terpasang, kirim otomatis secara hening
       if (state.settings.gasUrl) {
         document.getElementById('sync-status-indicator').textContent = "Menyimpan ke Cloud...";
         clearTimeout(cloudSaveTimeout);
@@ -558,13 +576,32 @@
       }
     }
 
-    // ================= BACKGROUND 10 PM AUTO-SYNC ENGINE =================
+    // ================= KALKULATOR DURASI SIKLUS HAID =================
+    // Menghitung berapa hari berturut-turut tanda haid aktif sampai tanggal yang sedang dilihat
+    function hitungHariHaid(targetDateStr) {
+      const istriRecords = state.db.istri || {};
+      if (!istriRecords[targetDateStr]?.isHaid) return 0;
+
+      let streak = 0;
+      let checkDate = parseLocalDate(targetDateStr);
+
+      while (true) {
+        const curStr = getLocalDateString(checkDate);
+        if (istriRecords[curStr]?.isHaid) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
     function checkAndRun10PmScheduler() {
       const now = new Date();
       const currentHour = now.getHours();
       const today = getLocalDateString(now);
 
-      // Jika sudah jam 10 malam (22:00) ke atas dan hari ini belum sync otomatis
       if (currentHour >= 22 && state.settings.last10PmSyncDate !== today && state.settings.gasUrl) {
         silentCloudPull(today);
       }
@@ -575,20 +612,16 @@
         const res = await fetch(state.settings.gasUrl);
         const json = await res.json();
         if (json.success && json.data) {
-          // Gabungkan data cloud ke state lokal tanpa menimpa data yang belum tersimpan
           state.db.suami = { ...(json.data.suami || {}), ...(state.db.suami || {}) };
           state.db.istri = { ...(json.data.istri || {}), ...(state.db.istri || {}) };
           state.settings.last10PmSyncDate = todayDate;
           persistEverything();
           renderUI();
-          showToast("Data cloud jam 10 malam berhasil diperbarui!");
+          showToast("Data cloud jam 10 malam berhasil disinkronkan!");
         }
-      } catch (e) {
-        console.warn("Scheduler 10 PM failed:", e);
-      }
+      } catch (e) {}
     }
 
-    // HELPER COPY
     function safeCopyToClipboard(textToCopy, successMsg = 'Berhasil disalin!') {
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(textToCopy)
@@ -619,11 +652,9 @@
       }
     }
 
-    // INISIALISASI
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('target-date-input').value = state.currentDate;
 
-      // Cek apakah ada sesi login tersimpan
       const savedLogged = sessionStorage.getItem('logged_user');
       if (savedLogged) {
         state.currentUser = savedLogged;
@@ -632,9 +663,8 @@
         renderUI();
       }
 
-      // Jalankan pengecekan sinkronisasi jam 10 malam
       checkAndRun10PmScheduler();
-      setInterval(checkAndRun10PmScheduler, 60000); // Cek setiap menit
+      setInterval(checkAndRun10PmScheduler, 60000);
     });
 
     function showToast(msg) {
@@ -644,7 +674,6 @@
       setTimeout(() => toast.classList.add('opacity-0', 'translate-y-2'), 2500);
     }
 
-    // LOGIN & PROFIL
     function selectLoginRole(role) {
       state.selectedLoginRole = role;
       const btnSuami = document.getElementById('btn-role-suami');
@@ -679,7 +708,6 @@
       document.getElementById('login-screen').classList.remove('hidden');
     }
 
-    // Beralih tampilan antara suami dan istri
     async function switchViewProfile(role) {
       if (role !== state.currentUser && !state.settings.gasUrl) {
         openSettingsModal();
@@ -710,6 +738,7 @@
       if (!state.db[user]) state.db[user] = {};
       if (!state.db[user][date]) {
         state.db[user][date] = {
+          isHaid: false,
           tahajud: { done: false, rakaat: 2 },
           dhuha: { done: false, rakaat: 2 },
           quran: { done: false, surat: '', ayat: '' },
@@ -734,7 +763,15 @@
       return state.db[user][date];
     }
 
-    // RENDER SEMUA ELEMEN
+    // TOGGLE SWITCH HAID
+    function toggleHaidIstri() {
+      if (state.currentUser !== 'istri' || state.viewUser !== 'istri') return;
+      const rec = getTodayRecord('istri', state.currentDate);
+      rec.isHaid = document.getElementById('switch-haid').checked;
+      triggerAutoSave();
+      renderUI();
+    }
+
     function renderUI() {
       const isReadOnly = state.currentUser !== state.viewUser;
       document.getElementById('read-only-banner').classList.toggle('hidden', !isReadOnly);
@@ -767,17 +804,45 @@
 
       const rec = getTodayRecord(state.viewUser, state.currentDate);
 
-      // 1. Tahajud
+      // ================= KONTROL MODE HAID =================
+      const switchContainer = document.getElementById('container-switch-haid');
+      const bannerHaid = document.getElementById('banner-haid-active');
+      const amalanList = document.getElementById('container-amalan-list');
+      const switchHaid = document.getElementById('switch-haid');
+      const labelDurasiHaid = document.getElementById('label-durasi-haid');
+
+      if (state.viewUser === 'istri') {
+        switchContainer.classList.remove('hidden');
+        switchHaid.checked = !!rec.isHaid;
+        switchHaid.disabled = isReadOnly;
+
+        const durasiHari = hitungHariHaid(state.currentDate);
+        if (rec.isHaid) {
+          labelDurasiHaid.textContent = `Sedang Haid: Hari ke-${durasiHari}`;
+          labelDurasiHaid.classList.remove('hidden');
+          bannerHaid.classList.remove('hidden');
+          amalanList.classList.add('hidden'); // Sembunyikan checklist amalan sholat
+        } else {
+          labelDurasiHaid.classList.add('hidden');
+          bannerHaid.classList.add('hidden');
+          amalanList.classList.remove('hidden'); // Tampilkan saat suci
+        }
+      } else {
+        // Suami tidak memiliki kontrol haid
+        switchContainer.classList.add('hidden');
+        bannerHaid.classList.add('hidden');
+        amalanList.classList.remove('hidden');
+      }
+
+      // Amalan Sholat & Tilawah
       document.getElementById('chk-tahajud').checked = !!rec.tahajud?.done;
       document.getElementById('chk-tahajud').disabled = isReadOnly;
       document.getElementById('rakaat-tahajud').textContent = `${rec.tahajud?.rakaat || 2} Rakaat`;
 
-      // 2. Dhuha
       document.getElementById('chk-dhuha').checked = !!rec.dhuha?.done;
       document.getElementById('chk-dhuha').disabled = isReadOnly;
       document.getElementById('rakaat-dhuha').textContent = `${rec.dhuha?.rakaat || 2} Rakaat`;
 
-      // 3. Tilawah Quran
       document.getElementById('chk-quran').checked = !!rec.quran?.done;
       document.getElementById('chk-quran').disabled = isReadOnly;
       const inSurat = document.getElementById('input-quran-surat');
@@ -787,20 +852,15 @@
       inSurat.disabled = isReadOnly;
       inAyat.disabled = isReadOnly;
 
-      // 4. Al-Waqiah
       document.getElementById('chk-waqiah').checked = !!rec.waqiah?.done;
       document.getElementById('chk-waqiah').disabled = isReadOnly;
       const selWaqiah = document.getElementById('select-waqiah-time');
       selWaqiah.value = rec.waqiah?.time || 'Malam/Isya';
       selWaqiah.disabled = isReadOnly;
 
-      // 5. Al-Kahfi
       renderAlkahfiCard(d, rec, isReadOnly);
-
-      // 6. Hafalan Quran (Hanya tampil jika fitur diaktifkan di pengaturan)
       renderHafalanCard(rec, isReadOnly);
 
-      // 7. Rawatib
       const rwt = rec.rawatib || {};
       ['qabliyah-subuh', 'badiyah-maghrib', 'badiyah-isya', 'witir'].forEach(id => {
         const prop = id.replace(/-([a-z])/g, g => g[1].toUpperCase());
@@ -810,7 +870,6 @@
       });
       updateWitirButtonUI(rwt.witirRakaat || 3);
 
-      // 8. Catatan
       const notesEl = document.getElementById('input-notes');
       notesEl.value = rec.notes || '';
       notesEl.disabled = isReadOnly;
@@ -915,6 +974,18 @@
 
     function renderProgressBar() {
       const rec = getTodayRecord(state.viewUser, state.currentDate);
+
+      // Jika istri sedang haid, capaian adalah istirahat ibadah
+      if (state.viewUser === 'istri' && rec.isHaid) {
+        document.getElementById('progress-percent').textContent = `100%`;
+        document.getElementById('progress-bar-fill').style.width = `100%`;
+        document.getElementById('progress-bar-fill').className = "h-full bg-rose-400 rounded-full transition-all duration-300";
+        document.getElementById('progress-fraction').textContent = `Sedang uzur syar'i / haid`;
+        return;
+      }
+
+      document.getElementById('progress-bar-fill').className = "h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300";
+
       let total = 5;
       let completed = 0;
 
@@ -943,7 +1014,6 @@
       document.getElementById('progress-fraction').textContent = `${completed} dari ${total} amalan selesai`;
     }
 
-    // EVENT HANDLERS DENGAN AUTO SAVE REALTIME
     function toggleAmalan(type) {
       if (state.currentUser !== state.viewUser) return;
       const rec = getTodayRecord(state.currentUser, state.currentDate);
@@ -998,7 +1068,6 @@
       triggerAutoSave();
     }
 
-    // Menyimpan surat, ayat, waqiah, & catatan secara instan saat diketik
     function saveDetailInputsRealtime() {
       if (state.currentUser !== state.viewUser) return;
       const rec = getTodayRecord(state.currentUser, state.currentDate);
@@ -1009,7 +1078,7 @@
       triggerAutoSave();
     }
 
-    // FORMAT PESAN BERBAGI WHATSAPP
+    // FORMAT PESAN WHATSAPP
     function generateShareMessage() {
       const rec = getTodayRecord(state.viewUser, state.currentDate);
       const roleName = state.viewUser === 'suami' ? 'Suami' : 'Istri';
@@ -1020,30 +1089,36 @@
       msg += `Pengisi: *${roleName}*\n`;
       msg += `Tanggal: ${dateFormatted}\n\n`;
 
-      msg += `${rec.tahajud?.done ? '✅' : '⬜'} *Tahajud:* ${rec.tahajud?.done ? (rec.tahajud.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
-      msg += `${rec.dhuha?.done ? '✅' : '⬜'} *Dhuha:* ${rec.dhuha?.done ? (rec.dhuha.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
+      if (state.viewUser === 'istri' && rec.isHaid) {
+        const durasi = hitungHariHaid(state.currentDate);
+        msg += `🌸 *Status:* Sedang Haid (Hari ke-${durasi})\n`;
+        msg += `_Sedang istirahat dari kewajiban sholat & tilawah. Tetap berdzikir & berdoa._\n`;
+      } else {
+        msg += `${rec.tahajud?.done ? '✅' : '⬜'} *Tahajud:* ${rec.tahajud?.done ? (rec.tahajud.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
+        msg += `${rec.dhuha?.done ? '✅' : '⬜'} *Dhuha:* ${rec.dhuha?.done ? (rec.dhuha.rakaat || 2) + ' Rakaat' : 'Belum'}\n`;
 
-      const qText = (rec.quran?.surat || rec.quran?.ayat) ? `${rec.quran.surat || ''} ${rec.quran.ayat ? '(' + rec.quran.ayat + ')' : ''}`.trim() : 'Selesai';
-      msg += `${rec.quran?.done ? '✅' : '⬜'} *Tilawah Al-Qur'an:* ${rec.quran?.done ? qText : 'Belum'}\n`;
-      msg += `${rec.waqiah?.done ? '✅' : '⬜'} *Surat Al-Waqi'ah:* ${rec.waqiah?.done ? 'Sudah (' + (rec.waqiah.time || 'Malam') + ')' : 'Belum'}\n`;
+        const qText = (rec.quran?.surat || rec.quran?.ayat) ? `${rec.quran.surat || ''} ${rec.quran.ayat ? '(' + rec.quran.ayat + ')' : ''}`.trim() : 'Selesai';
+        msg += `${rec.quran?.done ? '✅' : '⬜'} *Tilawah Al-Qur'an:* ${rec.quran?.done ? qText : 'Belum'}\n`;
+        msg += `${rec.waqiah?.done ? '✅' : '⬜'} *Surat Al-Waqi'ah:* ${rec.waqiah?.done ? 'Sudah (' + (rec.waqiah.time || 'Malam') + ')' : 'Belum'}\n`;
 
-      const day = d.getDay();
-      if (day === 4 || day === 5) {
-        msg += `${rec.kahfi?.done ? '✅' : '⬜'} *Surat Al-Kahfi:* ${rec.kahfi?.done ? 'Sudah Selesai' : 'Belum'}\n`;
+        const day = d.getDay();
+        if (day === 4 || day === 5) {
+          msg += `${rec.kahfi?.done ? '✅' : '⬜'} *Surat Al-Kahfi:* ${rec.kahfi?.done ? 'Sudah Selesai' : 'Belum'}\n`;
+        }
+
+        if (state.settings.featureHafalan) {
+          const hText = (rec.hafalan?.surat || rec.hafalan?.ayat) ? `${rec.hafalan.surat || ''} ${rec.hafalan.ayat ? '(' + rec.hafalan.ayat + ')' : ''}`.trim() : 'Selesai';
+          const kText = rec.hafalan?.kondisi === 'terbata' ? 'Terbata-bata' : 'Lancar';
+          msg += `${rec.hafalan?.done ? '✅' : '⬜'} *Hafalan Qur'an:* ${rec.hafalan?.done ? `${hText} [${kText}]` : 'Belum'}\n`;
+        }
+
+        const rwt = rec.rawatib || {};
+        msg += `\n*Sunnah Rawatib & Witir:*\n`;
+        msg += ` • Qabliyah Subuh: ${rwt.qabliyahSubuh ? '✅' : '⬜'}\n`;
+        msg += ` • Ba'diyah Maghrib: ${rwt.badiyahMaghrib ? '✅' : '⬜'}\n`;
+        msg += ` • Ba'diyah Isya': ${rwt.badiyahIsya ? '✅' : '⬜'}\n`;
+        msg += ` • Witir ba'da Isya': ${rwt.witir ? '✅ (' + (rwt.witirRakaat || 3) + ' Rakaat)' : '⬜'}\n`;
       }
-
-      if (state.settings.featureHafalan) {
-        const hText = (rec.hafalan?.surat || rec.hafalan?.ayat) ? `${rec.hafalan.surat || ''} ${rec.hafalan.ayat ? '(' + rec.hafalan.ayat + ')' : ''}`.trim() : 'Selesai';
-        const kText = rec.hafalan?.kondisi === 'terbata' ? 'Terbata-bata' : 'Lancar';
-        msg += `${rec.hafalan?.done ? '✅' : '⬜'} *Hafalan Qur'an:* ${rec.hafalan?.done ? `${hText} [${kText}]` : 'Belum'}\n`;
-      }
-
-      const rwt = rec.rawatib || {};
-      msg += `\n*Sunnah Rawatib & Witir:*\n`;
-      msg += ` • Qabliyah Subuh: ${rwt.qabliyahSubuh ? '✅' : '⬜'}\n`;
-      msg += ` • Ba'diyah Maghrib: ${rwt.badiyahMaghrib ? '✅' : '⬜'}\n`;
-      msg += ` • Ba'diyah Isya': ${rwt.badiyahIsya ? '✅' : '⬜'}\n`;
-      msg += ` • Witir ba'da Isya': ${rwt.witir ? '✅ (' + (rwt.witirRakaat || 3) + ' Rakaat)' : '⬜'}\n`;
 
       if (rec.notes) {
         msg += `\n*Catatan:* ${rec.notes}\n`;
@@ -1072,7 +1147,6 @@
       closeShareModal();
     }
 
-    // MODAL PENGATURAN
     function openSettingsModal() {
       document.getElementById('setting-gas-url').value = state.settings.gasUrl || '';
       document.getElementById('setting-pin-suami').value = state.settings.pins.suami || '1234';
@@ -1101,12 +1175,6 @@
       }
     }
 
-    function copyGasScript() {
-      const gasCode = document.getElementById('code-gs-source') ? document.getElementById('code-gs-source').textContent : "";
-      safeCopyToClipboard(gasCode, 'Kode Apps Script berhasil disalin!');
-    }
-
-    // Sinkronisasi Manual
     async function syncDataManual() {
       if (!state.settings.gasUrl) {
         openSettingsModal();
@@ -1118,7 +1186,6 @@
       syncBtn.querySelector('i').classList.add('fa-spin');
 
       try {
-        // 1. Simpan perubahan lokal ke spreadsheet
         await fetch(state.settings.gasUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -1126,7 +1193,6 @@
           body: JSON.stringify({ data: state.db })
         });
 
-        // 2. Tarik data pasangan terbaru dari spreadsheet
         const res = await fetch(state.settings.gasUrl);
         const json = await res.json();
         if (json.success && json.data) {
@@ -1136,7 +1202,7 @@
           renderUI();
           showToast('Data berhasil disinkronkan!');
         } else {
-          showToast('Data lokal tersimpan ke Spreadsheet!');
+          showToast('Data tersimpan ke Spreadsheet!');
         }
       } catch (err) {
         showToast('Tersimpan di LocalStorage!');
